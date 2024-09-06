@@ -1,0 +1,31 @@
+services:
+  rest-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: flask-rest-api
+    container_name: "${PROJECT_NAME}-backend"
+    ports:
+      - 9889:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:13
+    container_name: "${PROJECT_NAME}-db"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "restapi_db"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    environment:
+      POSTGRES_PASSWORD: "${PG_PASS}"
+      POSTGRES_USER: "${PG_USER}"
+      POSTGRES_DB: "${DB}"
+
+volumes:
+  pg_data:

@@ -1,0 +1,9 @@
+image: "python:3.9"
+
+stages:
+  - Lint
+
+pylint:
+  stage: Lint
+  script:
+    - pylint -d C0301 app.py
